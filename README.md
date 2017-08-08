@@ -8,3 +8,12 @@ PC端截图如下：
 手机端截图如下：
 ![image](https://github.com/yubo725/AppInstaller/blob/master/AppInstaller_Client.jpg)
 
+# 使用
+将apk安装到手机，
+将AppInstaller下载到PC，
+双击打开AppInstaller.jar或者使用java -jar AppInstaller.jar打开，
+确保PC和手机在同一个局域网内，
+打开手机端AppInstaller并点击“连接服务器”，
+然后从PC上选择apk文件并拖拽到PC端的AppInstaller的界面上，
+程序自动传输选择的apk到手机上，手机端接收成功后自动安装。
+
