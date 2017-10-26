@@ -2,9 +2,11 @@ package com.yubo.appinstaller;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.IdRes;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -114,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void saveFile(FileMsg fileMsg) {
         FileOutputStream fos = null;
-        FileInputStream fis = null;
         try {
             String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath();
             File file = new File(sdPath + File.separator + fileMsg.getFileName());
@@ -131,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         } finally {
             try {
-                if (fis != null) fis.close();
                 if (fos != null) fos.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -159,11 +159,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void install(File file) {
-        Intent intent = new Intent();
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setAction(android.content.Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
-        startActivity(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // Android7.0特殊处理
+            Intent intent = new Intent();
+            Uri apkUri = FileProvider.getUriForFile(this, "com.yubo.appinstaller.fileprovider", file);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent();
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setAction(android.content.Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+            startActivity(intent);
+        }
     }
 
     private void toast(final String msg) {
